@@ -71,8 +71,16 @@ app.post('/', (req: Request, res: Response) => {
   if(message.fromUserId === botUserId) return res.send();
   if(message.type !== "text") return res.send();
 
-  const text = /.*co$/i.test(message.body?.text) ? goodbyeText[random(goodbyeText.length)]:helloText[random(helloText.length)];
+  let text: string | null= null;
 
+  if(/.*ci$/i.test(message.body?.text))
+    text = helloText[random(helloText.length)];
+
+  if(/.*co$/i.test(message.body?.text))
+    text = goodbyeText[random(goodbyeText.length)];
+
+  if(!text) return res.send();
+  
   axios.post(requestURL, {
     roomId: roomId,
     type: "text",
