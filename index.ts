@@ -9,6 +9,11 @@ const wait = (sec: number) => {
     },sec * 1000);
   });
 }
+
+const random = (max: number) => {
+  return Math.floor(Math.random() * max);
+}
+
 type Message = {
   id: number;
   type: string;
@@ -34,6 +39,23 @@ if(!botUserId) throw new Error("BOT_USER_ID should defined in .env");
 
 app.use(express.json());
 
+
+const helloText: string[] = [
+  "Dobar ti dan prijateljice, neka ti od jutra sunce sije, neka te prati radost tokom dana.",
+  "Želim ti lijep dan, pun osmijeha, sreće i zadovoljstva, uživaj u svakom trenutku dana.",
+  "Dan  započni uz osmjeh, ne dopusti da ga itko kvari, odagnaj loše misli i kreni uzdignute glave u novi dan.",
+  "Danas ti želim milion poljubaca, da ti osmijeh sa lica ne silazi, iskoristi ga najbolje što znaš.",
+];
+
+const goodbyeText: string[] = [
+  "Bez obzira koliko je dan bio loš, uvijek ga pokušaj završiti pozitivnim mislima. Pokušaj se usredotočiti na sljedeći dan i nadati se slatkom snu. Laku noć.",
+  "Želim ti miran san i da se sutra probudiš s novim nadama i puno pozitivne energije. Laka ti noć!",
+  "Želim ti laku noć i da se dobro odmoriš, dragi prijatelju. Prestani se brinuti o životu. Uvijek ćeš imati moju podršku bez obzira na sve.",
+  "Idi u krevet i pripremi se za najbolji san ikad jer nikad nećeš imati topliju i mirniju noć od ove. Laku noć!",
+  "Skloni brige po strani i dopusti tijelu da osjeti mekoću tvog kreveta i toplinu pokrivača. Neka ti je miran san večeras!"
+]
+
+
 app.post('/', (req: Request, res: Response) => {
 
   const signature: string = req.headers["verification-signature"] as string;
@@ -46,11 +68,14 @@ app.post('/', (req: Request, res: Response) => {
   if(message.fromUserId === botUserId) return res.send();
   if(message.type !== "text") return res.send();
 
+  const text = /.*co$/i.test(message.body?.text) ? goodbyeText[random(goodbyeText.length)]:helloText[random(helloText.length)];
 
   axios.post(requestURL, {
     roomId: roomId,
     type: "text",
-    body: message.body
+    body: {
+      text:text
+    }
   },{
       headers: {
           "Content-Type": "application/json",
