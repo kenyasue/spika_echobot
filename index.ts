@@ -36,6 +36,9 @@ app.use(express.json());
 
 app.post('/', (req: Request, res: Response) => {
 
+  if(parseInt(process.env.DEBUG as string))
+    console.log("Webhook request",req.body,req.headers);
+
   const signature: string = req.headers["verification-signature"] as string;
   if(signature !== process.env.WEBHOOK_SIGNATURE){
     return res.send();
